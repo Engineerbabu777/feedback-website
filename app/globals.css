@@ -17,3 +17,8 @@ border-style: solid;
 border-width: 0 8px 16px 8px;
 border-color: transparent transparent #ddd transparent;
 }
+
+.text-white > .triangle{
+border-color: transparent transparent #FFF transparent;
+
+}

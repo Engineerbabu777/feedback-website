@@ -4,11 +4,15 @@ import FeedbackItem from './component/Feedback';
 import {useState} from 'react';
 import FeedbackForm from './component/FeedbackForm';
 import Button from './component/Button';
+import FeedbackItemPopup from './component/FeedbackItemPopup';
+import {feedback} from './component/Feedback';
+
+
 
 export default function Home() {
 
   const [showPopup , setShowPopup] = useState<boolean>(false);
-  const [showItem , setShowItem] = useState<boolean>(false);
+  const [showItem , setShowItem] = useState<feedback | null>(null);
 
   // FUNCTION TO SHOW FORM POPUP!!
   const showFeedbackPopup = () => {
@@ -16,9 +20,12 @@ export default function Home() {
   }
 
   // FUNCTION TO SHOW FEEDBACK ITEM!!
-  const showFeedbackItem = () => {
-    setShowItem(showItem ? false : true);
+  const showFeedbackItem = (id:feedback|null) => {
+    setShowItem(id);
   }
+
+  // FEEDBACK ARRAY!!
+  const feedbacks = [{title:'Please, post more videos',description:'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry s standard dummy text ever since the 1500s,',votes:97},{title:'Please, post more videos',description:'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry s standard dummy text ever since the 1500s,',votes:81},{title:'Please, post more videos',description:'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry s standard dummy text ever since the 1500s,',votes:78},{title:'Please, post more videos',description:'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry s standard dummy text ever since the 1500s,',votes:50},{title:'Please, post more videos',description:'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry s standard dummy text ever since the 1500s,',votes:41}]
 
 
   return (<>
@@ -35,20 +42,24 @@ export default function Home() {
            <section className="flex bg-gray-100 px-8 py-4 border-b" >
             <div className="grow"></div>
             <div className="">
-              <Button onClick={showFeedbackPopup} type="button" primary >Make a suggestion</Button>
+              <Button onClick={showFeedbackPopup} primary >Make a suggestion</Button>
             </div>
            </section>
 
           {/* MAIN-SECTIONS-SHOW!! */}
           <section className="px-8 ">
-            <FeedbackItem openItem={showFeedbackItem} />
-            <FeedbackItem openItem={showFeedbackItem} />
-            <FeedbackItem openItem={showFeedbackItem} />
-            <FeedbackItem openItem={showFeedbackItem} />
+            { feedbacks?.length > 0 && feedbacks.map((feed,ind) => (
+              <FeedbackItem openItem={() => showFeedbackItem(feed)} key={ind} feed={feed} />
+            ))
+
+            }
           </section>
 
           {/* POPUP MODAL! */}
           {showPopup && (<><FeedbackForm close={showFeedbackPopup} /></>)}
+
+          {/* SHOW FEEDBACK MODAL! */}
+          {showItem && (<><FeedbackItemPopup feedback={showItem} close={() => showFeedbackItem(null)} /></>)}
 
         </main>
   </>)
