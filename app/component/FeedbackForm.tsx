@@ -3,6 +3,7 @@ import Button from './Button';
 import Popup from './Popup';
 import {useState} from 'react';
 import axios from 'axios';
+import {supabase_Storage} from '../utils/supabase/storage';
 
 type Props = {
     close: () => void;
@@ -30,12 +31,17 @@ export default function FeedbackForm({ close }: Props) {
        .then((response:any) => close).catch((err:any) => console.log(err.message))
      }
 
+   
     // ATTACH FILES FUNCTION !!
      const handleAttachFiles = async(e:any) =>  {
-       e.preventDefault();
+      e.preventDefault();
 
-       const {files} = e.target; // GETTING FILES PROPERTEY FRONM EVENT HANDLER !!
-     
+      const files = [...e.target.files]; // GETTING FILES PROPERTY FROM EVENT HANDLER !!
+
+      supabase_Storage(files);
+      //  const upload = await axios.post('/api/upload',data);
+      //  console.log(upload)
+
      }
 
 
@@ -53,7 +59,7 @@ export default function FeedbackForm({ close }: Props) {
             <div className="flex gap-2 mt-2 justify-end">
                  <label className="py-2 px-4 text-gray-600 cursor-pointer">
                    <span >Attach Files</span> 
-                   <input onChange={handleAttachFiles} type="file" className="hidden" placeholder="attach files" title="attaching files" />
+                   <input multiple onChange={handleAttachFiles} type="file" className="hidden" placeholder="attach files" title="attaching files" />
                  </label>
                 <Button primary onClick={postFeedback} >Create post</Button>
             </div>
