@@ -5,11 +5,13 @@
 
 type Props = {
     close: () => void;
-    children: React.ReactNode;
-    title: string;
+    children?: React.ReactNode;
+    title?: string;
+    narrow?: boolean;
 }
 
-export default function Popup({ close, children, title }: Props) {
+export default function Popup({ close,children, title , narrow }: Props) {
+
 
 
     return (<>
@@ -23,7 +25,7 @@ export default function Popup({ close, children, title }: Props) {
             </button>
 
             <div className="w-full">
-                <div className="bg-white md:max-w-2xl md:rounded-md md:mx-auto overflow-hidden" 
+                <div className={(narrow ? 'md:max-w-sm' :'md:max-w-2xl')+" bg-white  md:rounded-md md:mx-auto overflow-hidden"} 
                 onClick={(e:any) => e.stopPropagation()}>
 
                     {/* HEADER FOR MODAL!! */}

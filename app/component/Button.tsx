@@ -7,7 +7,7 @@ import React from 'react';
 
 type Props ={
     children: React.ReactNode;
-    onClick?: () => void | any;
+    onClick?: any;
     primary?: boolean;
     disabled?: boolean;
 }

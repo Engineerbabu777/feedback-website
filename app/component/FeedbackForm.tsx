@@ -5,6 +5,9 @@ import {useState} from 'react';
 import axios from 'axios';
 import {supabase_Storage} from '../utils/supabase/storage';
 import {AiFillDelete} from 'react-icons/ai';
+import {ClipLoader} from 'react-spinners';
+
+
 
 type Props = {
     close: () => void;
@@ -12,13 +15,15 @@ type Props = {
 
 export default function FeedbackForm({ close }: Props) {
 
-    const [suggestion , setSuggestion] = useState<{title:string,description:string}>({
+    const [suggestion , setSuggestion] = useState<{title:string,description:string,votes:number}>({
         title: '',
         description:'',
+        votes:0
     });
 
     const [images ,setImages] = useState<any>([]);
-    const [uploading , setUploading] = useState(false);
+    const [uploading , setUploading] = useState<boolean>(false);
+    const [saving, setSaving] = useState<boolean>(false);
 
     // FUNCTION TO HANDLE THE STATES!
      const handler = (e:any) => {
@@ -28,11 +33,14 @@ export default function FeedbackForm({ close }: Props) {
     // FUNCTION TO POST NEW FEEDBACK !!
      const postFeedback = async(e:any) => {
        e.preventDefault();
+       
        // CHECKING IF ANY STATE IS EMPTY!
        
        // POST REQUEST USING AXIOS!
-       axios.post('/api/feedback',{title:suggestion?.title , description:suggestion?.description})
-       .then((response:any) => close).catch((err:any) => console.log(err.message))
+       setSaving(true);
+       axios.post('/api/feedback',{title:suggestion?.title , description:suggestion?.description,images:images})
+       .then((response:any) => { setSaving(false);close}).catch((err:any) => console.log(err.message))
+      
      }
 
    
@@ -77,11 +85,13 @@ export default function FeedbackForm({ close }: Props) {
             </section>
 
             <div className="flex gap-2 mt-2 justify-end">
-                 <label className="py-2 px-4 text-gray-600 cursor-pointer">
-                   <span >{uploading ? 'uploading' : 'Attach Files'}</span> 
+                 <label className=" text-gray-600 cursor-pointer">
+                   <span className={"flex items-center gap-2 py-1 px-2 rounded-md "+(uploading ? ' bg-green-400 text-white ':' ')} >{uploading ? (<><ClipLoader size={16} color={'white'}/>waiting</>) : 'Attach Files'}</span> 
                    <input multiple onChange={handleAttachFiles} type="file" className="hidden" placeholder="attach files" title="attaching files" />
                  </label>
-                <Button primary onClick={postFeedback} >Create post</Button>
+                 {saving ? (<div className="px-4 py-1 flex items-center gap-3 bg-black rounded-md text-white"><ClipLoader size={16} color={'white'}/>wait</div>) : (<>
+                 <Button primary onClick={postFeedback} >Create post</Button>
+                 </>)}
             </div>
           </form>
           

@@ -4,7 +4,7 @@ import Button from './Button';
 import FeedbackPopupComments from './FeedbackPopupComments';
 
 type Props = {
-    feedback: feedback | any | null;
+    feedback: any;
     close: () => void;
 }
 

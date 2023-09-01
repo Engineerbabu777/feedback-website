@@ -37,7 +37,7 @@ let urls = [];
         
         const { data, error } = await supabase.storage
             .from('feedback-upload') // Replace with your actual bucket name
-            .upload(`/files/${file?.name}`, file);
+            .upload(`/files/${Date.now()}`, file);
         if (error) {
             console.log(error.message)
         } else {

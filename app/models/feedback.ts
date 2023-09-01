@@ -6,7 +6,8 @@ const feedbackSchema = new mongoose.Schema({
 
     title: {type:String , require:true},
     description: {type:String , require:true},
-    ip:{type:String ,require:true},
+    // images:{type:[String]},
+    votes: Number,
 
 },{
     timestamps:true,
