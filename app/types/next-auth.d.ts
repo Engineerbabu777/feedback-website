@@ -12,10 +12,11 @@ declare module "next-auth/jwt" {
   
 declare module "next-auth" {
     interface User {
-
     }
+
   
     interface Session extends DefaultSession {
-      user?: User;
+      user?: User
+      
     }
   }
