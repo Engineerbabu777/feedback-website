@@ -38,8 +38,8 @@ export default function FeedbackForm({ close }: Props) {
        
        // POST REQUEST USING AXIOS!
        setSaving(true);
-       axios.post('/api/feedback',{title:suggestion?.title , description:suggestion?.description,images:images})
-       .then((response:any) => { setSaving(false);close}).catch((err:any) => console.log(err.message))
+       axios.post('/api/feedback',{title:suggestion?.title , description:suggestion?.description,images:images,votes:[]})
+       .then((response:any) => { console.log(response.data);setSaving(false);close}).catch((err:any) => console.log(err.message))
       
      }
 

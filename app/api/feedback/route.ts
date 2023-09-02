@@ -5,43 +5,47 @@ import {feedbackModel} from '../../models/feedback';
 import mongooseConnect from '../../libs/mongoose';
 
 
-console.log(1)
 
 export async function POST(request:NextRequest) {
  
     const body = await request.json(); // CONVERTING REQUEST TO JSON FORMAT !!
     const {title , description, images, votes} = body; // DESTRUCTING {TITLE AND DESCRIPTION} FROM BODY !!
-    console.log(2)
+    console.log(title , description , images , votes)
 
     // ESTABLISHING MONGODB CONNECTION USING OUR MONGOOSE!!
      mongooseConnect(); // CONNECTION TO DATABASE !!
 
     // CREATING NEW FEEDBACK !
      const newFeedback = await feedbackModel.create({
-         title , description , votes // CREATING DATA WITH IT USING OUR SCHEMA FOR FEEDBACK !!
+         title , description , votes,images // CREATING DATA WITH IT USING OUR SCHEMA FOR FEEDBACK !!
      });
     
 
     // RETURNING THE RESPONSE !!
-    return Response.json({success:true, feedback:newFeedback}); 
+    return NextResponse.json({success:true,newFeedback}); 
 
 }
 
 
 
-// export async function GET(request:NextRequest) {
-//     mongooseConnect(); // CONNECTION TO DATABASE !!
+export async function GET(request:NextRequest) {
+    mongooseConnect(); // CONNECTION TO DATABASE !!
 
-//     const data = await feedbackModel.find();
+    const data = await feedbackModel.find();
 
-//     return Response.json({success:true,feedbacks:data}) // RETURNING ALL FEEDBACK DOCUMENTS!!
-// }
+    return NextResponse.json({success:true,feedbacks:data}) // RETURNING ALL FEEDBACK DOCUMENTS!!
+}
 
 
-// export async function PUT(request:NextRequest) {
-//     const req = await request.json();
-//     console.log(req.params);
-//     // const feedback = await feedbackModel.findById()
+export async function PUT(request:NextRequest) {
+    const body = await request.json();
+    const {votes} = body;
+    console.log(votes)
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id")
+    const feedback = await feedbackModel.findByIdAndUpdate(id,{
+       votes:votes // UPDATINGS VOTES!
+    })
 
-//     return Response.json({success:true})
-// }
+    return NextResponse.json({success:true,id,votes})
+}

@@ -6,18 +6,26 @@ import FeedbackForm from './component/FeedbackForm';
 import Button from './component/Button';
 import FeedbackItemPopup from './component/FeedbackItemPopup';
 import axios from 'axios';
+import {useSession} from 'next-auth/react';
 
 
 export default function Home() {
 
+  const {data:session,status:sessionStatus} = useSession();
 
   const [showPopup , setShowPopup] = useState<boolean>(false);
   const [showItem , setShowItem] = useState<any>(null);
   const [feedbacks, setFeedbacks] = useState<[string]|[]>([]);
 
+  console.log(session?.user);
+  
+
+  const getData = async () => {
+    axios.get('/api/feedback').then((res:any)=> {setFeedbacks(res.data.feedbacks);console.log(res.data)});
+  }
+
   useEffect(() => {
-      // axios.get('/api/feedback')
-      // .then((rep) => {console.log(rep?.data)}).catch((err:any) => console.log(err));
+    getData();
   },[]);
 
   // FUNCTION TO SHOW FORM POPUP!!
@@ -28,6 +36,10 @@ export default function Home() {
   // FUNCTION TO SHOW FEEDBACK ITEM!!
   const showFeedbackItem = (id:any) => {
     setShowItem(id);
+  }
+
+  if(sessionStatus === 'loading'){
+    return 'loading session';
   }
 
 

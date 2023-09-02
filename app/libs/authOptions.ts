@@ -6,7 +6,7 @@
 import GoogleProvider from 'next-auth/providers/google'
 import clientPromise from './mongoDB';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter'
-import { Session, Account, SessionStrategy } from 'next-auth';
+import { Session, Account, SessionStrategy,User ,DefaultSession} from 'next-auth';
 import { JWT } from "next-auth/jwt";
 
 

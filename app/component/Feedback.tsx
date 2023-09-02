@@ -6,6 +6,9 @@ import axios from 'axios';
 import Popup from './Popup';
 import Button from './Button';
 import {signIn} from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+import {Types} from 'mongoose';
+import { ClipLoader } from 'react-spinners';
 
 type Props = {
     openItem: () => void;
@@ -15,13 +18,37 @@ type Props = {
 export default function FeedbackItem({ openItem, feed }: Props) {
 
     const [loginPopup,setLoginPopup] = useState<boolean>(false);
+    const {data:session} = useSession();
+    const [backendVotes , setBackendVotes] = useState(feed?.votes);
+    const [updatingVotes , setUpdatingVotes] = useState<boolean>(false);
 
+
+    const updateVotes = () => {
+        if(!session?.user?.email){
+            setLoginPopup(true);
+        }else{ // GIVE VOTE OR DOWN VOTE!
+            setUpdatingVotes(true);
+            // CHECK IF USER ALREADY GIVE VOTE !!!
+            if(backendVotes.includes(session?.user?.id)){ // THEN REMOVE!
+             const remove = [...feed?.votes.filter((id:any,ind:any) => id !== session?.user?.id)] // NEW ARRAY!
+             setBackendVotes(remove);console.log("removed!");
+             axios.put('/api/feedback?id='+feed?._id,{votes:remove})
+             .then((res:any)=>{console.log(res);setUpdatingVotes(false)});
+                
+            }else{ // OTHERWISE NEW VOTE !!!
+                const add = [...feed?.votes,session?.user?.id] // NEW ARRAY!
+                setBackendVotes(add);console.log("added!")
+                axios.put('/api/feedback?id='+feed?._id,{votes:add})
+                .then((res:any)=>{console.log(res);setUpdatingVotes(false)});
+
+            }   
+        }
+    }
 
     const give_down_votes = async(e:any) => {
-        e.stopPropagation();
-        e.preventDefault();
-        setLoginPopup(true);
-
+        // e.stopPropagation();
+        // e.preventDefault();
+        updateVotes();
     }
 
     const close = () =>{
@@ -29,12 +56,13 @@ export default function FeedbackItem({ openItem, feed }: Props) {
     }
 
 
-    const handle_login = (e:any) => {
+    const handle_login = async(e:any) => {
        e.preventDefault();
        e.stopPropagation();
-
-       signIn('google');
+       await signIn('google');
     }
+
+    console.log(feed);
 
 
     return (<>
@@ -46,12 +74,14 @@ export default function FeedbackItem({ openItem, feed }: Props) {
             </Link>
             {loginPopup && (<>
               <Popup close={close} title={"Login to Submit your vote"} narrow>
-                <Button onClick={handle_login}>Login WIth Google</Button>
+                <Button onClick={handle_login} primary>Login WIth Google</Button>
               </Popup>
             </>)}
             <div className="" onClick={give_down_votes} >
-                <button type="button" className="text-gray-400 text-sm items-center shadow-sm shadow-gray-200 border rounded-md py-1 px-1 flex gap-1">
-                    <span className="triangle" ></span>{feed?.votes || 0}
+                <button type="button" className={(backendVotes.includes(session?.user?.id) ? 'bg-blue-500 text-white' : ' text-gray-400 bg-white  ')+" text-sm items-center shadow-sm shadow-gray-200 border rounded-md py-1 px-1 flex gap-1"}>
+                    <span className="triangle" ></span>
+                    { (!updatingVotes) && (backendVotes?.length || 0)}
+                    { (updatingVotes) && (<ClipLoader size={16} color={'blue'}/>)}
                 </button>
             </div>
         </div>
