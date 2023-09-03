@@ -7,20 +7,22 @@ import Popup from './Popup';
 import Button from './Button';
 import {signIn} from 'next-auth/react';
 import { useSession } from 'next-auth/react';
-import {Types} from 'mongoose';
 import { ClipLoader } from 'react-spinners';
+import FeedbackItemPopup from './FeedbackItemPopup';
+
 
 type Props = {
-    openItem: () => void;
     feed: any;
 }
 
-export default function FeedbackItem({ openItem, feed }: Props) {
+export default function FeedbackItem({ feed }: Props) {
 
     const [loginPopup,setLoginPopup] = useState<boolean>(false);
     const {data:session} = useSession();
     const [backendVotes , setBackendVotes] = useState(feed?.votes);
     const [updatingVotes , setUpdatingVotes] = useState<boolean>(false);
+    const [showItem , setShowItem] = useState<any>(null);
+
 
 
     const updateVotes = () => {
@@ -55,6 +57,11 @@ export default function FeedbackItem({ openItem, feed }: Props) {
         setLoginPopup(false);
     }
 
+     // FUNCTION TO SHOW FEEDBACK ITEM!!
+    const showFeedbackItem = (id:any) => {
+      setShowItem(id);
+    }
+
 
     const handle_login = async(e:any) => {
        e.preventDefault();
@@ -68,7 +75,7 @@ export default function FeedbackItem({ openItem, feed }: Props) {
     return (<>
 
         <div   className="flex gap-8 items-center my-8">
-            <Link href="" onClick={(e) => { e.preventDefault(); openItem() }} className="flex-grow">
+            <Link href="" onClick={(e) => { e.preventDefault();showFeedbackItem(feed)}} className="flex-grow">
                 <h2 className="font-bold">{feed?.title}</h2>
                 <p className="text-gray-600 text-sm ">{feed?.description}</p>
             </Link>
@@ -86,6 +93,11 @@ export default function FeedbackItem({ openItem, feed }: Props) {
             </div>
         </div>
 
+
+          {/* SHOW FEEDBACK MODAL! */}
+        {showItem && (<><FeedbackItemPopup images={feed?.images} votes={backendVotes}  updateVotes={updateVotes}
+             description={feed?.description} title={feed?.title} updatingVotes={updatingVotes}
+             close={() => showFeedbackItem(null)} /></>)}
 
     </>)
 }

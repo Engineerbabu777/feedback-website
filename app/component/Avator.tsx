@@ -3,7 +3,7 @@
 
 
 type Props = {
- url: string | null;
+ url?: string | null;
 }
 
 export default function Avator({url}:Props) {

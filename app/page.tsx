@@ -4,10 +4,9 @@ import FeedbackItem from './component/Feedback';
 import {useState,useEffect} from 'react';
 import FeedbackForm from './component/FeedbackForm';
 import Button from './component/Button';
-import FeedbackItemPopup from './component/FeedbackItemPopup';
 import axios from 'axios';
 import {useSession} from 'next-auth/react';
-
+import Header from './component/Header';
 
 export default function Home() {
 
@@ -33,10 +32,10 @@ export default function Home() {
     setShowPopup(showPopup ? false : true);
   }
 
-  // FUNCTION TO SHOW FEEDBACK ITEM!!
-  const showFeedbackItem = (id:any) => {
-    setShowItem(id);
-  }
+  // // FUNCTION TO SHOW FEEDBACK ITEM!!
+  // const showFeedbackItem = (id:any) => {
+  //   setShowItem(id);
+  // }
 
   if(sessionStatus === 'loading'){
     return 'loading session';
@@ -45,6 +44,10 @@ export default function Home() {
 
 
   return (<>
+
+        {/* HEADER !! */}
+         <Header />
+         
        {/* MAIN-CONTAINER!! */}
         <main className="bg-white md:max-w-2xl mx-auto md:shadow-lg md:rounded-md md:mt-8 overflow-hidden" >
           
@@ -65,7 +68,7 @@ export default function Home() {
           {/* MAIN-SECTIONS-SHOW!! */}
           <section className="px-8 ">
             { feedbacks?.length > 0 && feedbacks.map((feed,ind) => (
-              <FeedbackItem openItem={() => showFeedbackItem(feed)} key={ind} feed={feed} />
+              <FeedbackItem  key={ind} feed={feed} />
             ))
 
             }
@@ -75,7 +78,7 @@ export default function Home() {
           {showPopup && (<><FeedbackForm close={showFeedbackPopup} /></>)}
 
           {/* SHOW FEEDBACK MODAL! */}
-          {showItem && (<><FeedbackItemPopup feedback={showItem} close={() => showFeedbackItem(null)} /></>)}
+          {/* {showItem && (<><FeedbackItemPopup feedback={showItem} close={() => showFeedbackItem(null)} /></>)} */}
 
         </main>
   </>)

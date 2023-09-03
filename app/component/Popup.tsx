@@ -25,7 +25,7 @@ export default function Popup({ close,children, title , narrow }: Props) {
             </button>
 
             <div className="w-full">
-                <div className={(narrow ? 'md:max-w-sm' :'md:max-w-2xl')+" bg-white  md:rounded-md md:mx-auto overflow-hidden"} 
+                <div className={(narrow ? 'md:max-w-sm' :'md:max-w-2xl')+" bg-white   md:rounded-md md:mx-auto overflow-hidden"} 
                 onClick={(e:any) => e.stopPropagation()}>
 
                     {/* HEADER FOR MODAL!! */}
