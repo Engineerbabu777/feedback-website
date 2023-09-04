@@ -2,7 +2,7 @@
 import { MongoClient } from "mongodb";
 
 
-const uri = "mongodb+srv://awaismumtaz0099:awaismumtaz0099@cluster0.m2xnkcb.mongodb.net/";
+const uri = "mongodb+srv://awaismumtaz0099:778677867786a..@cluster0.zhpfxof.mongodb.net/";
 const options = {};
 
 let client;

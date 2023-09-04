@@ -6,7 +6,9 @@ const commentSchema = new mongoose.Schema({
 
     content: String,
     attachments: [String],
-    userId: mongoose.Types.ObjectId,
+    email:String,
+    userImg:String,
+    feedbackId:{type:mongoose.Schema.Types.ObjectId, ref:'feedback'},
 
 },{
     timestamps: true,

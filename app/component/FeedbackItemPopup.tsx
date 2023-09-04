@@ -3,7 +3,7 @@ import Popup from "./Popup";
 import Button from './Button';
 import FeedbackPopupComments from './FeedbackPopupComments';
 import Link from 'next/link';
-
+import mongoose from 'mongoose';
 
 type Props = {
     close: () => void;
@@ -13,9 +13,10 @@ type Props = {
     title: string;
     updateVotes: () => void;
     updatingVotes: boolean;
+    _id: mongoose.Types.ObjectId;
 }
 
-export default function FeedbackItemPopup({ close, images, votes, description, title, updateVotes, updatingVotes }: Props) {
+export default function FeedbackItemPopup({ close, images, votes, description, title, updateVotes, updatingVotes, _id }: Props) {
 
 
 
@@ -55,7 +56,7 @@ export default function FeedbackItemPopup({ close, images, votes, description, t
                     </Button>
                 </div>
 
-                <FeedbackPopupComments />
+                <FeedbackPopupComments feedbackId={_id} />
 
             </div>
 

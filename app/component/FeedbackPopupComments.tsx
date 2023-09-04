@@ -1,6 +1,6 @@
 
 import Button from './Button';
-import {useState} from 'react';
+import {useState,useEffect} from 'react';
 import Avator from './Avator';
 import { supabase_Storage } from '../utils/supabase/storage';
 import {ClipLoader} from 'react-spinners';
@@ -8,13 +8,27 @@ import { AiFillDelete } from 'react-icons/ai';
 import axios from 'axios';
 import {useSession} from 'next-auth/react';
 
-export default function FeedbackPopupComments({}) {
+type Props ={
+  feedbackId: unknown;
+}
+
+export default function FeedbackPopupComments({feedbackId}:Props) {
 
 
     const [comment , setComment] = useState<string>(''); 
     const [images, setImages] = useState < any > ([]);
     const [uploading, setUploading] = useState < boolean > (false);
     const {data:session} = useSession();
+
+    // FETCH NEWLY ADDED COMMENT !!
+  const fetchComments2 = async() => {
+    axios.get('/api/comment?id='+feedbackId)
+    .then((res:any) => console.log(res.data));
+  }
+
+    useEffect(() => {
+       fetchComments2();
+    },[])
 
     // ATTACH FILES FUNCTION !!
   const handleAttachFiles = async (e: any) => {
@@ -37,11 +51,18 @@ export default function FeedbackPopupComments({}) {
     setImages([...images.filter((v: any, i: any) => v !== val)]);
   }
 
+  // FETCH NEWLY ADDED COMMENT !!
+  const fetchComments = async() => {
+    axios.get('/api/comment?id='+feedbackId)
+    .then((res:any) => console.log(res?.data));
+  }
+
   // FUNCTION TO SAVE COMMENTS ON FEEDBACK !!
-  const uploadNewComment = async(e) => {
+  const uploadNewComment = async(e:any) => {
      e.preventDefault();
-     axios.post('/api/comment',{comment , images , userId:session?.user?.id})
-     .then((res:any) => console.log(res)).catch((err:any) => console.log(err));
+     axios.post('/api/comment',{comment , images , email:session?.user?.email,userImg:session?.user?.image,feedbackId})
+     .then((res:any) => {console.log(res);fetchComments();}).catch((err:any) => console.log(err));
+
   }
 
 
@@ -76,7 +97,7 @@ export default function FeedbackPopupComments({}) {
                <span className={"flex items-center gap-2 py-1 px-2 rounded-md " + (uploading ? ' bg-green-400 text-white ' : ' ')} >{uploading ? (<><ClipLoader size={16} color={'white'} />waiting</>) : 'Attach Files'}</span>
                <input multiple onChange={handleAttachFiles} type="file" className="hidden" placeholder="attach files" title="attaching files" />
               </label>
-              <Button primary disabled={!comment} onClick={() => {uploadNewComment}}>Comment</Button>
+              <Button primary disabled={!comment} onClick={(e) => {uploadNewComment(e);}}>Comment</Button>
             </div>
         </form>
 

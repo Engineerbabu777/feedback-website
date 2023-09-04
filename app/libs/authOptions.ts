@@ -13,8 +13,8 @@ import { JWT } from "next-auth/jwt";
 export const authOptions = {
   providers: [
     GoogleProvider({
-      clientId: "835707392342-eslla7g3rhahpsrsc6i0lbjvctnnmor0.apps.googleusercontent.com",
-      clientSecret: "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",
+      clientId: "263154491287-fgiorgl6086aia9r067dv3fv1drqr7dv.apps.googleusercontent.com",
+      clientSecret: "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",
     }),
 
   ],

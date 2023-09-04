@@ -47,5 +47,5 @@ export async function PUT(request:NextRequest) {
        votes:votes // UPDATINGS VOTES!
     })
 
-    return NextResponse.json({success:true,id,votes})
+    return NextResponse.json({success:true,id,feedback})
 }
