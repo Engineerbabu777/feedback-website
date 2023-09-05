@@ -95,7 +95,7 @@ export default function FeedbackItem({ feed }: Props) {
 
 
           {/* SHOW FEEDBACK MODAL! */}
-        {showItem && (<><FeedbackItemPopup _id={feed?._id} images={feed?.images} votes={backendVotes}  updateVotes={updateVotes}
+        {showItem && (<><FeedbackItemPopup _id={feed?._id} userEmail={feed?.userEmail} images={feed?.images} votes={backendVotes}  updateVotes={updateVotes}
              description={feed?.description} title={feed?.title} updatingVotes={updatingVotes}
              close={() => showFeedbackItem(null)} /></>)}
 

@@ -6,7 +6,9 @@ import { supabase_Storage } from '../utils/supabase/storage';
 import {ClipLoader} from 'react-spinners';
 import { AiFillDelete } from 'react-icons/ai';
 import axios from 'axios';
-import {useSession} from 'next-auth/react';
+import {signIn, useSession} from 'next-auth/react';
+import TimeAgo from 'react-timeago';
+import Popup from './Popup';
 
 type Props ={
   feedbackId: unknown;
@@ -16,15 +18,26 @@ export default function FeedbackPopupComments({feedbackId}:Props) {
 
 
     const [comment , setComment] = useState<string>(''); 
+    const [comments , setComments] = useState<any>([]);
     const [images, setImages] = useState < any > ([]);
-    const [uploading, setUploading] = useState < boolean > (false);
-    const {data:session} = useSession();
+    const [uploading, setUploading] = useState <boolean> (false);
+    const [waiting , setWaiting] = useState<boolean>(false);
+    const {data:session,status} = useSession();
+    const [showLogin , setShowLogin] = useState<boolean>(false);
+
+    console.log(comments);
 
     // FETCH NEWLY ADDED COMMENT !!
   const fetchComments2 = async() => {
     axios.get('/api/comment?id='+feedbackId)
-    .then((res:any) => console.log(res.data));
+    .then((res:any) => {console.log(res.data.comments);setComments(res.data.comments)});
   }
+
+  // useEffect(() => {
+  //   if(session?.user?.email){
+  //     setShowLogin(true);
+  //   }
+  // },[status])
 
     useEffect(() => {
        fetchComments2();
@@ -54,30 +67,42 @@ export default function FeedbackPopupComments({feedbackId}:Props) {
   // FETCH NEWLY ADDED COMMENT !!
   const fetchComments = async() => {
     axios.get('/api/comment?id='+feedbackId)
-    .then((res:any) => console.log(res?.data));
+    .then((res:any) => console.log(res?.data.comments));
   }
 
   // FUNCTION TO SAVE COMMENTS ON FEEDBACK !!
   const uploadNewComment = async(e:any) => {
      e.preventDefault();
-     axios.post('/api/comment',{comment , images , email:session?.user?.email,userImg:session?.user?.image,feedbackId})
-     .then((res:any) => {console.log(res);fetchComments();}).catch((err:any) => console.log(err));
+     setWaiting(true);
+     axios.post('/api/comment',{comment , images , userEmail:session?.user?.email,userImg:session?.user?.image,feedbackId})
+     .then((res:any) => {console.log(res);setWaiting(false);fetchComments();}).catch((err:any) => console.log(err));
 
   }
+
+  const LoginFirst = (e:any) => {
+    e.preventDefault();
+    setShowLogin(true);
+    
+  }
+
 
 
     return(<>
       {/* PARENT! */}
        <div className="p-8">
+        { comments?.length>0 && comments?.map((c:any,i:number) => (<>
         <div className="flex gap-4 mb-8">
-            <span className=""><Avator /></span>
+          {console.log(c)}
+            <span className=""><Avator url={c?.userImg} /></span>
             <div className="">
              <p className="text-gray-600">
-               Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborumnumquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum! Provident similique accusantium nemo autem.
+              {c?.content}
              </p>
-             <div className="text-gray-400 mt-2 text-sm">Anonymous &middot; a few seconds ago</div>
+             <div className="text-gray-400 mt-2 text-xs">{c?.userEmail?.split('@')[0]} &middot; <TimeAgo date={new Date(c?.createdAt)} locale={'en Us'}/></div>
             </div>
         </div>
+        </>))
+        }
 
         <form className="">
             <textarea className="border rounded-md w-full p-2" placeholder="Let us know what do you think ..." 
@@ -87,7 +112,7 @@ export default function FeedbackPopupComments({feedbackId}:Props) {
              <section className="flex flex-wrap gap-4">
                {(images?.length > 0) && images.map((link: string, ind: number) => (<div key={ind} className=" relative w-20 h-24 border p-1  rounded-md border-blue-300 border-dashed">
                 <div onClick={(e: any) => deleteAttachment(e, link)} className="absolute -top-1 -right-1 bg-red-300 bg-opacity-50 cursor-pointer text-red-600  h-5 w-5 flex items-center justify-center rounded-full hover:w-7 hover:h-7 transition-all ease-in-out duration-300"><AiFillDelete /></div>
-               {(['jpeg', 'jfif', 'jpg', 'png', 'gif', 'webp'].includes(link.split('.')[3])) ? (<><img className="w-full h-full" src={link} alt="text" /></>) : (<a href={link} target={"_blank"} className="text-blue-400 ">visit</a>)}
+               {(['jpeg', 'jfif', 'jpg', 'png', 'gif', 'webp'].includes(link?.split('.')[3])) ? (<><img className="w-full h-full" src={link} alt="text" /></>) : (<a href={link} target={"_blank"} className="text-blue-400 ">visit</a>)}
                </div>))}
              </section>
 
@@ -97,9 +122,16 @@ export default function FeedbackPopupComments({feedbackId}:Props) {
                <span className={"flex items-center gap-2 py-1 px-2 rounded-md " + (uploading ? ' bg-green-400 text-white ' : ' ')} >{uploading ? (<><ClipLoader size={16} color={'white'} />waiting</>) : 'Attach Files'}</span>
                <input multiple onChange={handleAttachFiles} type="file" className="hidden" placeholder="attach files" title="attaching files" />
               </label>
-              <Button primary disabled={!comment} onClick={(e) => {uploadNewComment(e);}}>Comment</Button>
+              {<Button primary disabled={(!session?.user?.email)? false:!comment} onClick={(session?.user?.email) ? uploadNewComment:LoginFirst}>
+                {!waiting ? (<>{session?.user?.email ? 'comment': 'login/signup '}</>) : (<div className="flex items-center gap-2 text-black"><ClipLoader color={'black'} size={16}/>Waiting</div>)}
+              </Button>}
+
             </div>
         </form>
+
+        { (showLogin) && <Popup close={() => setShowLogin(false)} title={'Login first to make comment'}>
+           <Button onClick={()=>{signIn('google');setShowLogin(false);}} primary>Login with Google</Button>
+          </Popup>}
 
        </div>
     

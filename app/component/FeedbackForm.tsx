@@ -6,7 +6,7 @@ import axios from 'axios';
 import { supabase_Storage } from '../utils/supabase/storage';
 import { AiFillDelete } from 'react-icons/ai';
 import { ClipLoader } from 'react-spinners';
-
+import { useSession } from 'next-auth/react';
 
 
 type Props = {
@@ -20,7 +20,7 @@ export default function FeedbackForm({ close }: Props) {
     description: '',
     votes: 0
   });
-
+  const {data:session , status:sessionStatus} = useSession();
   const [images, setImages] = useState < any > ([]);
   const [uploading, setUploading] = useState < boolean > (false);
   const [saving, setSaving] = useState < boolean > (false);
@@ -38,7 +38,7 @@ export default function FeedbackForm({ close }: Props) {
 
     // POST REQUEST USING AXIOS!
     setSaving(true);
-    axios.post('/api/feedback', { title: suggestion?.title, description: suggestion?.description, images: images, votes: [] })
+    axios.post('/api/feedback', { title: suggestion?.title, description: suggestion?.description, images: images, votes: [],userEmail:session?.user?.email,userImg:session?.user?.image })
       .then((response: any) => { console.log(response.data); setSaving(false); close }).catch((err: any) => console.log(err.message))
 
   }

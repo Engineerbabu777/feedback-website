@@ -7,6 +7,8 @@ import Button from './component/Button';
 import axios from 'axios';
 import {useSession} from 'next-auth/react';
 import Header from './component/Header';
+import Popup from './component/Popup';
+
 
 export default function Home() {
 
@@ -15,6 +17,7 @@ export default function Home() {
   const [showPopup , setShowPopup] = useState<boolean>(false);
   const [showItem , setShowItem] = useState<any>(null);
   const [feedbacks, setFeedbacks] = useState<[string]|[]>([]);
+  const [showLogin , setShowLogin] = useState<boolean>(false);
 
   console.log(session?.user);
   
@@ -32,16 +35,15 @@ export default function Home() {
     setShowPopup(showPopup ? false : true);
   }
 
-  // // FUNCTION TO SHOW FEEDBACK ITEM!!
-  // const showFeedbackItem = (id:any) => {
-  //   setShowItem(id);
-  // }
+
+  const loginToGiveFeedback = () => {
+     setShowLogin(!showLogin);
+  }
+
 
   if(sessionStatus === 'loading'){
     return 'loading session';
   }
-
-
 
   return (<>
 
@@ -61,7 +63,9 @@ export default function Home() {
            <section className="flex bg-gray-100 px-8 py-4 border-b" >
             <div className="grow"></div>
             <div className="">
-              <Button onClick={showFeedbackPopup} primary >Make a suggestion</Button>
+              <Button 
+                onClick={ session?.user?.email ? showFeedbackPopup : loginToGiveFeedback} 
+                primary >Make a suggestion</Button>
             </div>
            </section>
 
@@ -76,6 +80,8 @@ export default function Home() {
 
           {/* POPUP MODAL! */}
           {showPopup && (<><FeedbackForm close={showFeedbackPopup} /></>)}
+
+          {showLogin && (<Popup title={'Login to make Suggestion'} close={() => setShowLogin(false)}></Popup>)}
 
           {/* SHOW FEEDBACK MODAL! */}
           {/* {showItem && (<><FeedbackItemPopup feedback={showItem} close={() => showFeedbackItem(null)} /></>)} */}

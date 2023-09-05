@@ -9,15 +9,14 @@ import mongooseConnect from '../../libs/mongoose';
 export async function POST(request:NextRequest) {
  
     const body = await request.json(); // CONVERTING REQUEST TO JSON FORMAT !!
-    const {title , description, images, votes} = body; // DESTRUCTING {TITLE AND DESCRIPTION} FROM BODY !!
-    console.log(title , description , images , votes)
+    const {title , description, images, votes,userEmail , userImage} = body; // DESTRUCTING {TITLE AND DESCRIPTION} FROM BODY !!
 
     // ESTABLISHING MONGODB CONNECTION USING OUR MONGOOSE!!
      mongooseConnect(); // CONNECTION TO DATABASE !!
 
     // CREATING NEW FEEDBACK !
      const newFeedback = await feedbackModel.create({
-         title , description , votes,images // CREATING DATA WITH IT USING OUR SCHEMA FOR FEEDBACK !!
+         title , description , votes, images, userEmail, userImage // CREATING DATA WITH IT USING OUR SCHEMA FOR FEEDBACK !!
      });
     
 
@@ -38,14 +37,26 @@ export async function GET(request:NextRequest) {
 
 
 export async function PUT(request:NextRequest) {
-    const body = await request.json();
-    const {votes} = body;
-    console.log(votes)
-    const url = new URL(request.url);
-    const id = url.searchParams.get("id")
-    const feedback = await feedbackModel.findByIdAndUpdate(id,{
-       votes:votes // UPDATINGS VOTES!
-    })
+    mongooseConnect(); // CONNECTION TO DATABASE !!
 
-    return NextResponse.json({success:true,id,feedback})
+    const body = await request.json();
+    const {votes , title , images , id , description} = body;
+    
+    if(votes){
+        const url = new URL(request.url);
+        const id = url.searchParams.get("id")
+        const feedback = await feedbackModel.findByIdAndUpdate(id,{
+           votes:votes // UPDATINGS VOTES!
+        })
+        return NextResponse.json({success:true,id,feedback});
+    }
+
+    console.log(title , id , images , description);
+
+    const data = await feedbackModel.findByIdAndUpdate(id,{
+        images , title , description
+    });
+
+    return NextResponse.json({success:true,data});
+
 }
