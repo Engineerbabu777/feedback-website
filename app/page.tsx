@@ -18,17 +18,23 @@ export default function Home() {
   const [showItem , setShowItem] = useState<any>(null);
   const [feedbacks, setFeedbacks] = useState<[string]|[]>([]);
   const [showLogin , setShowLogin] = useState<boolean>(false);
+  const [sort, setSort] = useState('votes');
 
-  console.log(session?.user);
-  
+
 
   const getData = async () => {
-    axios.get('/api/feedback').then((res:any)=> {setFeedbacks(res.data.feedbacks);console.log(res.data)});
+    axios.get('/api/feedback?sort='+sort).then((res:any) => {
+      if(sort === 'votes') {
+        setFeedbacks(res?.data?.feedbacks.sort((a:any, b:any) => b.votes.length - a.votes.length));
+      } else{
+        setFeedbacks(res?.data?.feedbacks);
+      }
+    });
   }
 
   useEffect(() => {
     getData();
-  },[]);
+  },[sort]);
 
   // FUNCTION TO SHOW FORM POPUP!!
   const showFeedbackPopup = () => {
@@ -60,8 +66,25 @@ export default function Home() {
            </header>
           
           {/* FUNCTIONS-MAIN!!  */}
-           <section className="flex bg-gray-100 px-8 py-4 border-b" >
-            <div className="grow"></div>
+           <section className="flex bg-gray-100 px-8 py-4 border-b items-center" >
+            <div className="grow flex items-center gap-4 ">
+              {/* OPTIONS !! */}
+              <div>
+               <span className="text-gray-400 text-sm">sort by</span>
+               <select title={"filter by values"} value={sort} onChange={(e) => setSort(e.target.value)} className="bg-transparent p-2 text-gray-600">
+                <option value="votes">Most voted</option>
+                <option value="latest">latest</option>
+                <option value="oldest">oldest</option>
+               </select>
+              </div>
+
+              {/* INPUT !! */}
+               <div className="">
+                <input placeholder="search by phrase" className="py-1 px-4 rounded-md" />
+
+               </div>
+
+            </div>
             <div className="">
               <Button 
                 onClick={ session?.user?.email ? showFeedbackPopup : loginToGiveFeedback} 

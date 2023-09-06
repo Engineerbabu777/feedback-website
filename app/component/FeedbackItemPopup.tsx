@@ -132,10 +132,10 @@ export default function FeedbackItemPopup({ close, images, userEmail, votes, des
                         </svg>Cancel</button>
                     }
 
-                    {editInfo?.edit && <label className="  cursor-pointer bg-black text-white rounded-md mr-4 ">
+                    {/* {editInfo?.edit && <label className="  cursor-pointer bg-black text-white rounded-md mr-4 ">
                         <span className={"flex items-center gap-2 py-1 px-2 rounded-md " + (uploading ? ' bg-green-400 text-white ' : ' ')} >{uploading ? (<><ClipLoader size={16} color={'white'} />waiting</>) : 'Attach Files'}</span>
                         <input multiple onChange={handleAttachFiles} type="file" className="hidden" placeholder="attach files" title="attaching files" />
-                    </label>}
+                    </label>} */}
 
                     {(session?.user?.email === userEmail && !editInfo?.edit) && <button className="bg-green-500 text-white flex gap-4 items-center rounded-md px-4 mr-4" type="button" onClick={updateEditState}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">

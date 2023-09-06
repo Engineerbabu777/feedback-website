@@ -30,7 +30,16 @@ export async function POST(request:NextRequest) {
 export async function GET(request:NextRequest) {
     mongooseConnect(); // CONNECTION TO DATABASE !!
 
-    const data = await feedbackModel.find();
+    const url = new URL(request.url);
+    const sortBy = url.searchParams.get('sort');
+    console.log(sortBy)
+    let sortByVal;
+    if(sortBy === 'latest') sortByVal=-1
+    if(sortBy === 'oldest') sortByVal=1
+    if(sortBy === 'votes') sortByVal=1
+
+    const data = await feedbackModel.find().sort( { createdAt: sortByVal as any } )
+
 
     return NextResponse.json({success:true,feedbacks:data}) // RETURNING ALL FEEDBACK DOCUMENTS!!
 }
